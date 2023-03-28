@@ -34,7 +34,7 @@ def change_text_color():
 
 
 def apply_watermark():
-    watermark_image = Image.open(image).convert('RGBA')
+    watermark_image = image.convert('RGBA')
     my_font = ImageFont.truetype(font_var.get(), current_font_size.get())
 
     # Blank image for text
@@ -77,9 +77,9 @@ def apply_watermark():
 
 def file_open():
     global image, img_width, img_height
-    image = askopenfilename(title="Select An Image", filetypes=[('Images', '*.jpg *.jpeg *.png *.webp *.gif')])
-    if image:
-        img_width, img_height = Image.open(image).size
+    image_path = askopenfilename(title="Select An Image", filetypes=[('Images', '*.jpg *.jpeg *.png *.webp *.gif')])
+    if image_path:
+        img_width, img_height = Image.open(image_path).size
         # Update User Interface with values based on new Image
         width_position.config(to=img_width)
         height_position.config(to=img_height)
@@ -87,8 +87,12 @@ def file_open():
         height_label.configure(text="Height: ")
         current_width.set(int(img_width / 2))
         current_height.set(int(img_height / 2))
+        # Correct the ratio of uploaded image
+        image = Image.open(image_path)
+        img_width = int(img_width*(750/img_height))
+        image = image.resize((img_width, 750))
         # Update Displayed Image
-        uploaded_image = ImageTk.PhotoImage(Image.open(image))
+        uploaded_image = ImageTk.PhotoImage(image)
         label.configure(image=uploaded_image)
         label.image = uploaded_image
         apply_watermark()
